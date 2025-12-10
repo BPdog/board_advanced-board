@@ -48,6 +48,10 @@ public class User extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     // 비즈니스 메서드
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
     public void updatePassword(String password) {
         this.password = password;
     }
