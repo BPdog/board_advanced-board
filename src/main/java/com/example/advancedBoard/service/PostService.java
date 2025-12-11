@@ -8,7 +8,6 @@ import com.example.advancedBoard.dto.response.PostListResponse;
 import com.example.advancedBoard.entity.Board;
 import com.example.advancedBoard.entity.Post;
 import com.example.advancedBoard.entity.User;
-import com.example.advancedBoard.repository.CommentRepository;
 import com.example.advancedBoard.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository; // 여긴 왜 레파지토리
+    private final CommentService commentService;
     private final UserService userService;
     private final BoardService boardService;
 
@@ -162,7 +161,7 @@ public class PostService {
      * Entity -> ListResponse 변환
      */
     private PostListResponse convertToListResponse(Post post) {
-        int commentCount = (int) commentRepository.countByPost(post);
+        int commentCount = (int) commentService.countByPost(post);
 
         return PostListResponse.builder()
                 .id(post.getId())
@@ -178,10 +177,10 @@ public class PostService {
      * Entity -> DetailResponse 변환
      */
     private PostDetailResponse convertToDetailResponse(Post post) {
-        int commentCount = (int) commentRepository.countByPost(post);
+        int commentCount = (int) commentService.countByPost(post);
 
         // 댓글 목록 조회
-        List<CommentResponse> comments = commentRepository.findByPostOrderByCreatedAtAsc(post).stream()
+        List<CommentResponse> comments = commentService.findCommentEntitiesByPost(post).stream()
                 .map(comment -> CommentResponse.builder()
                         .id(comment.getId())
                         .content(comment.getContent())
@@ -210,6 +209,14 @@ public class PostService {
     }
 
     // ========== Public 헬퍼 메서드 (다른 Service에서 사용) ==========
+
+    /**
+     * 특정 게시판의 게시글 수 조회 (다른 Service에서 사용)
+     */
+    @Transactional(readOnly = true)
+    public long countByBoard(Board board) {
+        return postRepository.countByBoard(board);
+    }
 
     /**
      * Post Entity 조회 (다른 Service에서 사용)

@@ -141,11 +141,26 @@ public class CommentService {
     // ========== Public 헬퍼 메서드 (다른 Service에서 사용) ==========
 
     /**
+     * 특정 게시글의 댓글 수 조회 (다른 Service에서 사용)
+     */
+    @Transactional(readOnly = true)
+    public long countByPost(Post post) {
+        return commentRepository.countByPost(post);
+    }
+
+    /**
      * Comment Entity 조회 (다른 Service에서 사용)
      */
     @Transactional(readOnly = true)
     public Comment findCommentEntityById(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다. ID: " + id));
+    }
+    /**
+     * 특정 게시글의 댓글 목록 조회 (다른 Service에서 사용)
+     */
+    @Transactional(readOnly = true)
+    public List<Comment> findCommentEntitiesByPost(Post post) {
+        return commentRepository.findByPostOrderByCreatedAtAsc(post);
     }
 }

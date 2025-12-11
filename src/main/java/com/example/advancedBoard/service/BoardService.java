@@ -5,7 +5,6 @@ import com.example.advancedBoard.dto.request.BoardUpdateRequest;
 import com.example.advancedBoard.dto.response.BoardResponse;
 import com.example.advancedBoard.entity.Board;
 import com.example.advancedBoard.repository.BoardRepository;
-import com.example.advancedBoard.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     /**
      * 게시판 생성
@@ -98,7 +97,7 @@ public class BoardService {
         Board board = findBoardEntityById(id);
 
         // 게시판에 게시글이 있는지 확인
-        long postCount = postRepository.countByBoard(board);
+        long postCount = postService.countByBoard(board);
         if (postCount > 0) {
             throw new IllegalStateException("게시글이 존재하는 게시판은 삭제할 수 없습니다.");
         }
@@ -121,8 +120,7 @@ public class BoardService {
      * Entity -> Response 변환
      */
     private BoardResponse convertToResponse(Board board) {
-        // 해당 게시판의 게시글 수 조회
-        int postCount = (int) postRepository.countByBoard(board);
+        int postCount = (int) postService.countByBoard(board);
 
         return BoardResponse.builder()
                 .id(board.getId())
