@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,11 +52,17 @@ public class UserService {
      * 사용자 조회 (이메일)
      */
     @Transactional(readOnly = true)
-    public UserResponse getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다: " + email));
-
-        return convertToResponse(user);
+    public Optional<UserResponse> findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(this::convertToResponse);
+    }
+    /**
+     * 사용자 조회 (사용자명)
+     */
+    @Transactional(readOnly = true)
+    public Optional<UserResponse> findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(this::convertToResponse);
     }
 
     /**

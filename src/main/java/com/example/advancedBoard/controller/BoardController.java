@@ -41,12 +41,13 @@ public class BoardController {
 
     /**
      * 게시판 조회 (이름)
-     * GET /api/boards/name?name=자유게시판
+     * GET /api/boards/search/name?name=자유게시판
      */
-    @GetMapping("/name")
-    public ResponseEntity<BoardResponse> getBoardByName(@RequestParam String name) {
-        BoardResponse response = boardService.getBoardByName(name);
-        return ResponseEntity.ok(response);
+    @GetMapping("/search/name")
+    public ResponseEntity<BoardResponse> findByName(@RequestParam String name) {
+        return boardService.findByName(name)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**

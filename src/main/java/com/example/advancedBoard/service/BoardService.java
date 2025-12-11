@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,11 +50,9 @@ public class BoardService {
      * 게시판 조회 (이름)
      */
     @Transactional(readOnly = true)
-    public BoardResponse getBoardByName(String name) {
-        Board board = boardRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다: " + name));
-
-        return convertToResponse(board);
+    public Optional<BoardResponse> findByName(String name) {
+        return boardRepository.findByName(name)
+                .map(this::convertToResponse);
     }
 
     /**

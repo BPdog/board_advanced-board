@@ -38,16 +38,28 @@ public class UserController {
         UserResponse response = userService.getUserById(id);
         return ResponseEntity.ok(response);
     }
-
     /**
      * 사용자 조회 (이메일)
-     * GET /api/users/email?email=test@example.com
+     * GET /api/users/search/email?email=
      */
-    @GetMapping("/email")
-    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
-        UserResponse response = userService.getUserByEmail(email);
-        return ResponseEntity.ok(response);
+    @GetMapping("/search/email")
+    public ResponseEntity<UserResponse> findByEmail(@RequestParam String email) {
+        return userService.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
+    /**
+     * 사용자 조회 (사용자명)
+     * GET /api/users/search/username?username=
+     */
+    @GetMapping("/search/username")
+    public ResponseEntity<UserResponse> findByUsername(@RequestParam String username) {
+        return userService.findByUsername(username)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 
     /**
      * 전체 사용자 조회
